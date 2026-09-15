@@ -72,9 +72,9 @@
         <div class="flex justify-between items-center bg-slate-800/95 p-3 rounded-2xl border border-slate-700 shadow-xl backdrop-blur-md">
             <!-- Title & Logo -->
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 to-amber-600 flex items-center justify-center shadow-lg">
-                    <i class="fa-solid fa-futbol text-slate-900 text-xl"></i>
-                </div>
+                <!-- VÍNCULO DEL ESCUDO EN EL BANNER -->
+                <img src="Escudo ET 16.png" alt="Escudo ET N°16 España" class="h-12 w-auto object-contain drop-shadow-md">
+                
                 <div>
                     <h1 class="text-lg md:text-2xl font-black font-game tracking-wider bg-gradient-to-r from-yellow-300 via-emerald-400 to-green-300 bg-clip-text text-transparent">
                         SUPER PENAL MATEMÁTICO HD
@@ -489,7 +489,7 @@
             keeper.progress = 0;
             keeper.rotation = 0;
 
-            // Kicker player behind ball (standing to the left-rear of ball like screenshot)
+            // Kicker player behind ball
             playerCharacter.x = w * 0.29;
             playerCharacter.y = h * 0.81;
             playerCharacter.startX = playerCharacter.x;
@@ -554,7 +554,7 @@
             ctx.fillStyle = '#eab308';
             ctx.fillRect(w * 0.7, horizon - wallH + 4, w * 0.25, wallH - 8);
 
-            // 2. Striped Grass Pitch (Like screenshot alternating green stripes)
+            // 2. Striped Grass Pitch
             const grassTop = horizon;
             const grassHeight = h - grassTop;
             const numStripes = 9;
@@ -566,7 +566,7 @@
                 ctx.fillRect(0, y1, w, stripeH + 1);
             }
 
-            // Pitch Lines (Thick white vector lines like reference image)
+            // Pitch Lines
             ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = Math.max(3, w * 0.005);
             ctx.lineCap = 'square';
@@ -605,10 +605,10 @@
             // 3. Goal Frame & Net Mesh
             drawGoal(w, h);
 
-            // 4. Goalkeeper Character (From reference image: Orange top, dark shorts, blonde hair)
+            // 4. Goalkeeper Character
             drawGoalkeeper(w, h);
 
-            // 5. Shooter Player Character (From reference image: AC Milan Red/Black jersey, white shorts, red socks, blonde hair)
+            // 5. Shooter Player Character
             drawShooter(w, h);
 
             // 6. Ball & Dynamic Shadow
@@ -648,7 +648,7 @@
                 ctx.stroke();
             }
 
-            // Goal Posts & Crossbar (Realistic white posts with 3D outline)
+            // Goal Posts & Crossbar
             ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = Math.max(6, w * 0.011);
             ctx.lineCap = 'round';
@@ -677,7 +677,7 @@
             ctx.translate(keeper.x, keeper.y);
             ctx.rotate(keeper.rotation);
 
-            const scale = w * 0.0013; // Responsive character scaling
+            const scale = w * 0.0013;
 
             // Shadow under Keeper
             ctx.fillStyle = 'rgba(0,0,0,0.25)';
@@ -685,11 +685,9 @@
             ctx.ellipse(0, 35 * scale, 22 * scale, 7 * scale, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Legs / Socks (Orange socks, dark shorts)
-            // Left Leg
-            ctx.fillStyle = '#ea580c'; // Orange socks
+            // Legs / Socks
+            ctx.fillStyle = '#ea580c';
             ctx.fillRect(-12 * scale, 10 * scale, 7 * scale, 22 * scale);
-            // Right Leg
             ctx.fillRect(5 * scale, 10 * scale, 7 * scale, 22 * scale);
 
             // Cleats / Shoes
@@ -697,37 +695,33 @@
             ctx.fillRect(-14 * scale, 30 * scale, 10 * scale, 6 * scale);
             ctx.fillRect(4 * scale, 30 * scale, 10 * scale, 6 * scale);
 
-            // Shorts (Dark Blue / Black)
+            // Shorts
             ctx.fillStyle = '#1e293b';
             ctx.fillRect(-15 * scale, -2 * scale, 30 * scale, 15 * scale);
 
-            // Torso / Jersey (Bright Orange as in screenshot)
-            ctx.fillStyle = '#f97316'; // Vibrant Orange
+            // Torso / Jersey
+            ctx.fillStyle = '#f97316';
             ctx.beginPath();
             ctx.roundRect(-16 * scale, -28 * scale, 32 * scale, 28 * scale, 5);
             ctx.fill();
 
-            // Jersey Detail Lines / Trim
+            // Jersey Detail Lines
             ctx.fillStyle = '#ea580c';
             ctx.fillRect(-16 * scale, -10 * scale, 32 * scale, 4 * scale);
 
-            // Arms & Gloves (Raised in ready goalkeeper pose)
+            // Arms & Gloves
             ctx.fillStyle = '#f97316';
             if (keeper.isDiving) {
-                // Reaching outstretched arms
                 ctx.fillRect(-26 * scale, -24 * scale, 10 * scale, 7 * scale);
                 ctx.fillRect(16 * scale, -24 * scale, 10 * scale, 7 * scale);
-                // Yellow Keeper Gloves
                 ctx.fillStyle = '#fde047';
                 ctx.beginPath();
                 ctx.arc(-30 * scale, -20 * scale, 6 * scale, 0, Math.PI * 2);
                 ctx.arc(30 * scale, -20 * scale, 6 * scale, 0, Math.PI * 2);
                 ctx.fill();
             } else {
-                // Ready crouch posture
                 ctx.fillRect(-24 * scale, -22 * scale, 9 * scale, 16 * scale);
                 ctx.fillRect(15 * scale, -22 * scale, 9 * scale, 16 * scale);
-                // Yellow Keeper Gloves
                 ctx.fillStyle = '#fde047';
                 ctx.beginPath();
                 ctx.arc(-22 * scale, -6 * scale, 6 * scale, 0, Math.PI * 2);
@@ -736,13 +730,13 @@
             }
 
             // Head & Skin Tone
-            ctx.fillStyle = '#fed7aa'; // Natural skin
+            ctx.fillStyle = '#fed7aa';
             ctx.beginPath();
             ctx.arc(0, -36 * scale, 9 * scale, 0, Math.PI * 2);
             ctx.fill();
 
-            // Blonde Hair (Matching Reference Photo)
-            ctx.fillStyle = '#facc15'; // Bright Blonde
+            // Blonde Hair
+            ctx.fillStyle = '#facc15';
             ctx.beginPath();
             ctx.arc(0, -39 * scale, 9.5 * scale, Math.PI, 0);
             ctx.fill();
@@ -754,7 +748,7 @@
             ctx.save();
             ctx.translate(playerCharacter.x, playerCharacter.y);
 
-            const scale = w * 0.0016; // Responsive scale for shooter
+            const scale = w * 0.0016;
 
             // Shadow under Player
             ctx.fillStyle = 'rgba(0,0,0,0.3)';
@@ -762,34 +756,29 @@
             ctx.ellipse(0, 42 * scale, 24 * scale, 8 * scale, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Red Socks (Matching Reference)
+            // Red Socks
             ctx.fillStyle = '#dc2626';
-            
-            // Running leg animation swing
             let legOffset = playerCharacter.isRunning ? Math.sin(playerCharacter.runProgress * Math.PI * 6) * 12 * scale : 0;
 
-            // Left Leg
+            // Left & Right Leg
             ctx.fillRect((-14 * scale), (14 * scale) + legOffset, 8 * scale, 26 * scale);
-            // Right Leg
             ctx.fillRect((4 * scale), (14 * scale) - legOffset, 8 * scale, 26 * scale);
 
-            // Soccer Shoes / Cleats
+            // Cleats
             ctx.fillStyle = '#0f172a';
             ctx.fillRect((-16 * scale), (38 * scale) + legOffset, 11 * scale, 6 * scale);
             ctx.fillRect((4 * scale), (38 * scale) - legOffset, 11 * scale, 6 * scale);
 
-            // White Shorts (Matching Reference)
+            // White Shorts
             ctx.fillStyle = '#f8fafc';
             ctx.fillRect(-16 * scale, -2 * scale, 32 * scale, 18 * scale);
 
-            // Red & Black Vertical Striped Jersey (AC Milan style from reference image)
-            // Base Red
+            // Red & Black Vertical Striped Jersey
             ctx.fillStyle = '#dc2626';
             ctx.beginPath();
             ctx.roundRect(-18 * scale, -34 * scale, 36 * scale, 34 * scale, 6);
             ctx.fill();
 
-            // Black Vertical Stripes
             ctx.fillStyle = '#0f172a';
             ctx.fillRect(-12 * scale, -34 * scale, 6 * scale, 34 * scale);
             ctx.fillRect(0 * scale, -34 * scale, 6 * scale, 34 * scale);
@@ -805,8 +794,8 @@
             ctx.arc(0, -44 * scale, 10 * scale, 0, Math.PI * 2);
             ctx.fill();
 
-            // Blonde Hair (Matching Reference Photo)
-            ctx.fillStyle = '#facc15'; // Bright Blonde Hair
+            // Blonde Hair
+            ctx.fillStyle = '#facc15';
             ctx.beginPath();
             ctx.arc(0, -47 * scale, 10.5 * scale, Math.PI * 0.85, Math.PI * 0.15);
             ctx.fill();
@@ -815,30 +804,25 @@
         }
 
         function drawBall(w, h) {
-            // Ball Shadow
             ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
             ctx.beginPath();
             ctx.ellipse(ball.x, ball.y + ball.scale * 0.45, ball.scale * 0.85, ball.scale * 0.35, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Soccer Ball Base
             ctx.save();
             ctx.translate(ball.x, ball.y);
             ctx.rotate(ball.spin);
 
-            // Main White Sphere
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.arc(0, 0, ball.scale, 0, Math.PI * 2);
             ctx.fill();
 
-            // Classic Black Pentagons & Patterns
             ctx.fillStyle = '#0f172a';
             ctx.beginPath();
             ctx.arc(0, 0, ball.scale * 0.42, 0, Math.PI * 2);
             ctx.fill();
 
-            // Outer Pattern Accents
             ctx.fillStyle = '#334155';
             ctx.beginPath();
             ctx.arc(-ball.scale * 0.6, -ball.scale * 0.4, ball.scale * 0.25, 0, Math.PI * 2);
@@ -1040,7 +1024,6 @@
         function executePlayerKick(cornerKey, isCorrect) {
             sound.playWhistle();
 
-            // Player run up sequence to ball
             playerCharacter.isRunning = true;
             const runDuration = 25;
             let runFrame = 0;
@@ -1055,7 +1038,6 @@
                     requestAnimationFrame(runStep);
                 } else {
                     playerCharacter.isRunning = false;
-                    // Trigger Shot
                     sound.playKick();
                     
                     const targetPixel = getCornerPixel(cornerKey);
@@ -1063,7 +1045,6 @@
                     ball.targetY = targetPixel.y;
                     ball.inFlight = true;
 
-                    // Goalkeeper reaction logic
                     keeper.isDiving = true;
                     if (isCorrect) {
                         const oppositeKey = cornerKey.includes('L') ? 'TR' : 'TL';
@@ -1107,7 +1088,6 @@
         function executeCpuKick(userCornerChoice, userIsCorrect) {
             sound.playWhistle();
 
-            // Player run up sequence
             playerCharacter.isRunning = true;
             let runFrame = 0;
             const runDuration = 20;
@@ -1179,13 +1159,11 @@
                 const t = frame / duration;
                 const easeT = 1 - Math.pow(1 - t, 2);
 
-                // Ball Arc
                 ball.x = ball.startX + (ball.targetX - ball.startX) * easeT;
                 ball.y = ball.startY + (ball.targetY - ball.startY) * easeT;
                 ball.scale = (canvas.width * 0.038) * (1 - easeT * 0.52);
                 ball.spin += 0.28;
 
-                // Keeper Dive Trajectory
                 keeper.x = keeper.startX + (keeper.targetX - keeper.startX) * easeT;
                 keeper.y = keeper.startY + (keeper.targetY - keeper.startY) * easeT;
 
@@ -1264,7 +1242,6 @@
             initGame();
         });
 
-        // Initialize Game & Start Loop
         resizeCanvas();
         initGame();
         requestAnimationFrame(mainLoop);
