@@ -65,6 +65,7 @@
         }
     </style>
 </head>
+    
 <body class="min-h-screen text-slate-100 flex flex-col items-center justify-between p-2 md:p-4">
 
     <!-- Top Bar Header & Scoreboard -->
@@ -973,7 +974,7 @@
                 equationRoleTag.textContent = "⚽ ¡Elige la respuesta correcta en el arco para patear y hacer el gol!";
                 equationRoleTag.className = "text-xs font-bold uppercase tracking-widest text-emerald-400 block mb-0.5";
             } else {
-                turnIndicator.textContent = `RONDA ${gameState.round} • RIVAL PATEA (TU ATACAS EL TIRO)`;
+                turnIndicator.textContent = `RONDA ${gameState.round} • RIVAL PATEA (VOS ATAJÁS)`;
                 turnIndicator.className = "text-xs md:text-sm font-bold text-rose-400 font-game uppercase tracking-wider";
                 equationRoleTag.textContent = "🧤 ¡Elige la respuesta correcta para tirarte con el arquero y atajar!";
                 equationRoleTag.className = "text-xs font-bold uppercase tracking-widest text-amber-400 block mb-0.5";
