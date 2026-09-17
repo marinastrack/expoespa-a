@@ -1,20 +1,43 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-full w-full overflow-hidden">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Super Penal Matemático HD - 7mo Grado</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;800&display=swap');
         
-        body {
+        * {
+            touch-action: manipulation;
+            box-sizing: border-box;
+        }
+
+        html, body {
             font-family: 'Outfit', sans-serif;
             background-color: #070d19;
             user-select: none;
-            overflow-x: hidden;
+            overflow: hidden !important;
+            height: 100%;
+            height: 100dvh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Hide scrollbars globally */
+        ::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+        * {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
         }
 
         .font-game {
@@ -26,29 +49,33 @@
             background: radial-gradient(circle at center, #16a34a 0%, #15803d 60%, #14532d 100%);
         }
 
+        /* Fullscreen Start Screen Background */
+        .bg-stadium-full {
+            background: radial-gradient(ellipse at top, #1e293b 0%, #0f172a 50%, #020617 100%);
+        }
+
         /* Interactive Target Button Overlay on Goal Corners */
         .target-btn {
-            background: rgba(15, 23, 42, 0.82);
+            background: rgba(15, 23, 42, 0.85);
             border: 2px dashed rgba(250, 204, 21, 0.85);
-            box-shadow: 0 0 18px rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .target-btn:hover, .target-btn:focus {
             border: 3px solid #38bdf8;
-            background: rgba(14, 165, 233, 0.45);
-            box-shadow: 0 0 28px rgba(56, 189, 248, 0.9), inset 0 0 18px rgba(56, 189, 248, 0.6);
-            transform: scale(1.06);
+            background: rgba(14, 165, 233, 0.5);
+            box-shadow: 0 0 24px rgba(56, 189, 248, 0.9), inset 0 0 15px rgba(56, 189, 248, 0.6);
+            transform: scale(1.04);
         }
 
         .target-btn:active {
-            transform: scale(0.96);
+            transform: scale(0.95);
         }
 
         #gameCanvas {
             touch-action: none;
-            border-radius: 1rem;
         }
 
         .custom-modal {
@@ -56,40 +83,193 @@
         }
 
         @keyframes pulseGlow {
-            0% { box-shadow: 0 0 10px rgba(250, 204, 21, 0.4); }
-            100% { box-shadow: 0 0 25px rgba(250, 204, 21, 0.9); }
+            0% { box-shadow: 0 0 15px rgba(250, 204, 21, 0.5), 0 0 30px rgba(16, 185, 129, 0.4); transform: scale(1); }
+            100% { box-shadow: 0 0 35px rgba(250, 204, 21, 0.95), 0 0 50px rgba(16, 185, 129, 0.8); transform: scale(1.02); }
         }
 
         .pulse-yellow {
-            animation: pulseGlow 1.5s infinite alternate;
+            animation: pulseGlow 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatCard {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .animate-float {
+            animation: floatCard 3.2s ease-in-out infinite;
+        }
+
+        /* Stadium Light Rays Animation */
+        @keyframes spotlightSweep {
+            0% { opacity: 0.25; transform: rotate(-5deg) scale(1); }
+            50% { opacity: 0.55; transform: rotate(5deg) scale(1.08); }
+            100% { opacity: 0.25; transform: rotate(-5deg) scale(1); }
+        }
+
+        .spotlight-left {
+            animation: spotlightSweep 6s ease-in-out infinite;
+            transform-origin: top left;
+        }
+
+        .spotlight-right {
+            animation: spotlightSweep 6s ease-in-out infinite reverse;
+            transform-origin: top right;
         }
     </style>
 </head>
     
-<body class="min-h-screen text-slate-100 flex flex-col items-center justify-between p-2 md:p-4">
+<body class="h-full w-full text-slate-100 flex flex-col justify-between items-center p-1.5 sm:p-3 overflow-hidden">
 
-    <!-- Top Bar Header & Scoreboard -->
-    <header class="w-full max-w-4xl flex flex-col gap-2 mb-2">
-        <div class="flex justify-between items-center bg-slate-800/95 p-3 rounded-2xl border border-slate-700 shadow-xl backdrop-blur-md">
+    <!-- FULLSCREEN START SCREEN OVERLAY (100% Viewport Coverage) -->
+    <div id="startModal" class="fixed inset-0 w-full h-full min-h-[100dvh] bg-stadium-full flex flex-col items-center justify-between p-3 sm:p-6 z-50 overflow-hidden select-none">
+        
+        <!-- Background Stadium Floodlights & Glow Effects -->
+        <div class="absolute -top-12 -left-12 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none spotlight-left"></div>
+        <div class="absolute -top-12 -right-12 w-64 h-64 bg-yellow-500/20 rounded-full blur-3xl pointer-events-none spotlight-right"></div>
+        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-96 h-48 bg-sky-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Top Header Bar on Fullscreen Cover -->
+        <header class="w-full max-w-4xl flex justify-between items-center z-10 shrink-0 border-b border-slate-700/60 pb-2">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <img src="./Super Penal Matemático HD - 7mo Grado_files/Escudo ET 16.png" 
+                     onerror="this.src='https://placehold.co/100x100/1e293b/facc15?text=ET16'" 
+                     alt="Escudo ET N°16 España" 
+                     class="h-8 sm:h-12 w-auto object-contain drop-shadow-md">
+                <div>
+                    <span class="bg-yellow-500/20 border border-yellow-400/60 text-yellow-300 text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wider block w-fit">
+                        E.T. N°16 D.E. 15 "ESPAÑA"
+                    </span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 font-semibold">Torneo Interescolar de Matemática</span>
+                </div>
+            </div>
+
+            <!-- Audio Control Button -->
+            <button id="startSoundToggle" class="px-3 py-1.5 bg-slate-800/90 hover:bg-slate-700 text-yellow-400 font-bold rounded-xl border border-slate-700 transition duration-200 flex items-center justify-center gap-1.5 text-xs shadow-md">
+                <i id="startSoundIcon" class="fa-solid fa-volume-high"></i>
+                <span class="hidden sm:inline">Sonido</span>
+            </button>
+        </header>
+
+        <!-- Main Center Dashboard Section -->
+        <main class="w-full max-w-3xl flex-1 flex flex-col items-center justify-center gap-2 sm:gap-4 my-auto z-10 min-h-0 py-2">
+            
+            <!-- School Emblem + Trophy Emblem Graphic -->
+            <div class="flex items-center justify-center gap-3 animate-float">
+                <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-600 p-0.5 shadow-xl flex items-center justify-center">
+                    <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center text-yellow-400 text-xl sm:text-3xl">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                </div>
+                <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 p-0.5 shadow-xl flex items-center justify-center">
+                    <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center text-emerald-400 text-xl sm:text-3xl">
+                        <i class="fa-solid fa-futbol"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Title Header -->
+            <div class="text-center space-y-1">
+                <h1 class="text-2xl sm:text-5xl font-black font-game tracking-wider bg-gradient-to-r from-yellow-300 via-emerald-400 to-green-300 bg-clip-text text-transparent drop-shadow-lg leading-tight">
+                    SUPER PENAL MATEMÁTICO HD
+                </h1>
+                <p class="text-xs sm:text-base font-semibold text-slate-300 flex items-center justify-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    7mo Grado • Campeonato Oficial de Penales
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                </p>
+            </div>
+
+            <!-- Math Topics Badges Chips -->
+            <div class="flex flex-wrap justify-center gap-1.5 sm:gap-2 my-1">
+                <span class="bg-slate-800/90 text-emerald-300 border border-emerald-500/40 text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-xl shadow-sm flex items-center gap-1">
+                    <i class="fa-solid fa-square-root-variable text-emerald-400"></i> Ecuaciones
+                </span>
+                <span class="bg-slate-800/90 text-yellow-300 border border-yellow-500/40 text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-xl shadow-sm flex items-center gap-1">
+                    <i class="fa-solid fa-percent text-yellow-400"></i> Porcentajes
+                </span>
+                <span class="bg-slate-800/90 text-sky-300 border border-sky-500/40 text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-xl shadow-sm flex items-center gap-1">
+                    <i class="fa-solid fa-pizza-slice text-sky-400"></i> Fracciones
+                </span>
+                <span class="bg-slate-800/90 text-rose-300 border border-rose-500/40 text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-xl shadow-sm flex items-center gap-1">
+                    <i class="fa-solid fa-calculator text-rose-400"></i> Operaciones Combined
+                </span>
+            </div>
+
+            <!-- Game Instructions Card Box -->
+            <div class="w-full bg-slate-900/80 border-2 border-slate-700/80 backdrop-blur-md rounded-2xl p-3 sm:p-5 shadow-2xl space-y-2.5">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                    <h3 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-amber-400 font-game flex items-center gap-2">
+                        <i class="fa-solid fa-gamepad text-sm sm:text-base"></i> ¿CÓMO JUGAR Y GANAR LA COPA?
+                    </h3>
+                    <span class="text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-700">Tanda a 5 Penales</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm">
+                    <div class="flex items-start gap-2.5 bg-slate-950/70 p-2.5 sm:p-3 rounded-xl border border-slate-800">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-lg shrink-0">⚽</div>
+                        <div>
+                            <strong class="text-emerald-400 block font-semibold text-xs sm:text-sm">Tu Turno de Patear:</strong>
+                            <p class="text-[11px] sm:text-xs text-slate-300 leading-tight">Resuelve la ecuación y dispara a la esquina con el resultado correcto para anotar gol.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-2.5 bg-slate-950/70 p-2.5 sm:p-3 rounded-xl border border-slate-800">
+                        <div class="w-8 h-8 rounded-lg bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-lg shrink-0">🧤</div>
+                        <div>
+                            <strong class="text-rose-400 block font-semibold text-xs sm:text-sm">Tu Turno de Atajar:</strong>
+                            <p class="text-[11px] sm:text-xs text-slate-300 leading-tight">Calcula velozmente el resultado correcto para adivinar el tiro de la CPU y atajar el balón.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-[10px] sm:text-xs text-slate-400 bg-slate-950/50 px-3 py-1.5 rounded-xl border border-slate-800">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-trophy text-yellow-400"></i> Modo Tanda de Penales</span>
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-microchip text-rose-400"></i> Rival: CPU Matemático Nivel 7mo</span>
+                </div>
+            </div>
+
+            <!-- Giant Play Action Button -->
+            <button id="startGameBtn" class="w-full max-w-md py-3.5 sm:py-4 bg-gradient-to-r from-yellow-400 via-emerald-400 to-green-500 hover:from-yellow-300 hover:to-green-400 text-slate-950 font-black rounded-2xl text-lg sm:text-2xl transition duration-200 shadow-2xl font-game pulse-yellow flex items-center justify-center gap-3 border-2 border-yellow-200/50">
+                <i class="fa-solid fa-play text-xl sm:text-2xl"></i>
+                <span>¡COMENZAR PARTIDO!</span>
+            </button>
+        </main>
+
+        <!-- Footer Bar on Fullscreen Cover -->
+        <footer class="w-full max-w-4xl text-center z-10 shrink-0 border-t border-slate-800/80 pt-2">
+            <p class="text-[10px] sm:text-xs text-slate-500 font-medium">
+                Escuela Técnica N°16 D.E. 15 "España" • Área de Matemática & Ciencias Exactas
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- Top Bar Header & Scoreboard Container -->
+    <header class="w-full max-w-4xl flex flex-col gap-1.5 shrink-0">
+        <div class="flex justify-between items-center bg-slate-800/95 px-3 py-1.5 rounded-xl border border-slate-700 shadow-lg">
             <!-- Title & Logo -->
-            <div class="flex items-center gap-3">
-                <!-- VÍNCULO DEL ESCUDO EN EL BANNER -->
-                <img src="Escudo ET 16.png" alt="Escudo ET N°16 España" class="h-12 w-auto object-contain drop-shadow-md">
+            <div class="flex items-center gap-2">
+                <img src="./Super Penal Matemático HD - 7mo Grado_files/Escudo ET 16.png" 
+                     onerror="this.src='https://placehold.co/100x100/1e293b/facc15?text=ET16'" 
+                     alt="Escudo ET N°16 España" 
+                     class="h-8 sm:h-10 w-auto object-contain">
                 
                 <div>
-                    <h1 class="text-lg md:text-2xl font-black font-game tracking-wider bg-gradient-to-r from-yellow-300 via-emerald-400 to-green-300 bg-clip-text text-transparent">
+                    <h1 class="text-xs sm:text-lg font-black font-game tracking-wider bg-gradient-to-r from-yellow-300 via-emerald-400 to-green-300 bg-clip-text text-transparent leading-tight">
                         SUPER PENAL MATEMÁTICO HD
                     </h1>
-                    <p class="text-xs text-slate-400 font-semibold">7mo Grado • Edición Campeonato</p>
+                    <p class="text-[9px] sm:text-xs text-slate-400 font-semibold hidden sm:block">7mo Grado • Edición Campeonato</p>
                 </div>
             </div>
 
             <!-- Global Controls -->
-            <div class="flex items-center gap-2">
-                <button id="soundToggle" class="p-2.5 bg-slate-700 hover:bg-slate-600 text-yellow-400 rounded-xl transition duration-200 shadow-md">
-                    <i id="soundIcon" class="fa-solid fa-volume-high text-lg"></i>
+            <div class="flex items-center gap-1.5">
+                <button id="soundToggle" class="p-1.5 sm:p-2 bg-slate-700 hover:bg-slate-600 text-yellow-400 rounded-lg transition duration-200 shadow">
+                    <i id="soundIcon" class="fa-solid fa-volume-high text-sm sm:text-base"></i>
                 </button>
-                <button id="restartBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 font-bold text-slate-950 rounded-xl transition duration-200 shadow-md flex items-center gap-2">
+                <button id="restartBtn" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 font-bold text-slate-950 rounded-lg transition duration-200 shadow flex items-center gap-1.5 text-xs sm:text-sm">
                     <i class="fa-solid fa-rotate-right"></i>
                     <span class="hidden sm:inline">Reiniciar</span>
                 </button>
@@ -97,130 +277,114 @@
         </div>
 
         <!-- Live Scoreboard & Penalty Series Dots -->
-        <div class="bg-slate-900/95 border border-slate-700/80 rounded-2xl p-3 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-3">
+        <div class="bg-slate-900/95 border border-slate-700/80 rounded-xl px-3 py-1.5 shadow-xl flex items-center justify-between gap-2">
             <!-- Human Team -->
-            <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
-                <div class="flex items-center gap-2">
-                    <span class="text-2xl">😎</span>
-                    <span class="font-bold text-emerald-400 text-sm md:text-base">TU EQUIPO</span>
-                </div>
-                <div class="text-3xl font-black text-white bg-slate-800 px-4 py-1 rounded-xl border border-slate-700" id="playerScore">
-                    0
-                </div>
-                <div class="flex gap-1.5" id="playerDots">
-                    <!-- Dots generated dynamically -->
-                </div>
+            <div class="flex items-center gap-2">
+                <span class="text-base sm:text-xl">😎</span>
+                <span class="font-bold text-emerald-400 text-xs sm:text-sm hidden sm:inline">TÚ</span>
+                <div class="text-xl sm:text-2xl font-black text-white bg-slate-800 px-2.5 py-0.5 rounded-lg border border-slate-700" id="playerScore">0</div>
+                <div class="flex gap-1" id="playerDots"></div>
             </div>
 
             <!-- Match Turn Banner -->
-            <div class="text-center px-4 py-1 bg-slate-800/90 rounded-full border border-yellow-500/40">
-                <span id="turnIndicator" class="text-xs md:text-sm font-bold text-yellow-400 font-game uppercase tracking-wider">
-                    ¡TU TURNO DE PATEAR!
-                </span>
+            <div class="text-center px-2 py-0.5 bg-slate-800/90 rounded-full border border-yellow-500/40 max-w-[170px] sm:max-w-none truncate">
+                <span id="turnIndicator" class="text-[10px] sm:text-xs font-bold text-yellow-400 font-game uppercase tracking-wider">RONDA 1 • TU TURNO DE PATEAR</span>
             </div>
 
             <!-- CPU Team -->
-            <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-                <div class="flex gap-1.5" id="cpuDots">
-                    <!-- Dots generated dynamically -->
-                </div>
-                <div class="text-3xl font-black text-white bg-slate-800 px-4 py-1 rounded-xl border border-slate-700" id="cpuScore">
-                    0
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="font-bold text-rose-400 text-sm md:text-base">RIVAL CPU</span>
-                    <span class="text-2xl">🤖</span>
-                </div>
+            <div class="flex items-center gap-2">
+                <div class="flex gap-1" id="cpuDots"></div>
+                <div class="text-xl sm:text-2xl font-black text-white bg-slate-800 px-2.5 py-0.5 rounded-lg border border-slate-700" id="cpuScore">0</div>
+                <span class="font-bold text-rose-400 text-xs sm:text-sm hidden sm:inline">CPU</span>
+                <span class="text-base sm:text-xl">🤖</span>
             </div>
         </div>
     </header>
 
-    <!-- Main Stadium Field Screen -->
-    <main class="relative w-full max-w-4xl flex-1 flex flex-col items-center justify-center my-1">
+    <!-- Main Stadium Field Arena (Viewport Dynamic Scaling) -->
+    <main class="relative w-full max-w-4xl flex-1 flex flex-col items-center justify-between my-1.5 min-h-0 overflow-hidden">
         
         <!-- Equation Banner Box Above Goal -->
-        <div id="equationDisplayBox" class="w-full bg-slate-900/90 border-2 border-yellow-400 rounded-2xl p-3 mb-2 text-center shadow-2xl backdrop-blur-md">
-            <span id="equationRoleTag" class="text-xs font-bold uppercase tracking-widest text-emerald-400 block mb-0.5">
-                ⚽ ¡Resuelve y elige la opción correcta en el arco para patear!
-            </span>
-            <div id="equationText" class="text-2xl sm:text-3xl font-black text-white font-game tracking-wide">
-                Cargando desafío...
-            </div>
+        <div id="equationDisplayBox" class="w-full bg-slate-900/90 border-2 border-yellow-400 rounded-xl px-3 py-1.5 text-center shadow-lg shrink-0 mb-1">
+            <span id="equationRoleTag" class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-400 block leading-tight">⚽ ¡Elige la respuesta correcta para patear y hacer el gol!</span>
+            <div id="equationText" class="text-base sm:text-2xl font-black text-white font-game tracking-wide mt-0.5">¿Cuánto es 1/2 de 6?</div>
         </div>
 
-        <div class="relative w-full aspect-[4/3] sm:aspect-[16/10] max-h-[60vh] rounded-2xl overflow-hidden shadow-2xl border-4 border-slate-700 bg-pitch flex items-center justify-center">
+        <!-- Canvas and Target Buttons Overlay Wrapper -->
+        <div class="relative w-full flex-1 rounded-2xl overflow-hidden shadow-2xl border-2 sm:border-4 border-slate-700 bg-pitch flex items-center justify-center min-h-0">
             
             <!-- Canvas Rendering Arena -->
             <canvas id="gameCanvas" class="w-full h-full object-cover"></canvas>
 
             <!-- Goal Corner Target Buttons Overlay -->
-            <div id="targetOverlay" class="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-3 sm:gap-6 p-6 sm:p-10 pointer-events-auto transition-all duration-300">
-                <button data-corner="TL" class="target-btn rounded-2xl flex flex-col items-center justify-center p-2 group">
-                    <i class="fa-solid fa-bullseye text-xl sm:text-2xl text-yellow-400 group-hover:scale-125 transition"></i>
-                    <span class="text-xs font-bold text-amber-300 mt-1 uppercase">Ángulo Izq.</span>
-                    <span class="target-value text-base sm:text-xl font-extrabold text-white font-game bg-slate-950/80 px-3 py-1 rounded-xl mt-1 border border-amber-400/50">?</span>
+            <div id="targetOverlay" class="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-2 sm:gap-4 p-3 sm:p-6 pointer-events-auto transition-all duration-300">
+                <button data-corner="TL" class="target-btn rounded-xl flex flex-col items-center justify-center p-1.5 group" data-val="7">
+                    <i class="fa-solid fa-bullseye text-sm sm:text-xl text-yellow-400 group-hover:scale-110 transition"></i>
+                    <span class="text-[9px] sm:text-xs font-bold text-amber-300 uppercase">Ángulo Izq.</span>
+                    <span class="target-value text-xs sm:text-lg font-extrabold text-white font-game bg-slate-950/80 px-2.5 py-0.5 rounded-lg mt-0.5 border border-amber-400/50">7</span>
                 </button>
-                <button data-corner="TR" class="target-btn rounded-2xl flex flex-col items-center justify-center p-2 group">
-                    <i class="fa-solid fa-bullseye text-xl sm:text-2xl text-yellow-400 group-hover:scale-125 transition"></i>
-                    <span class="text-xs font-bold text-amber-300 mt-1 uppercase">Ángulo Der.</span>
-                    <span class="target-value text-base sm:text-xl font-extrabold text-white font-game bg-slate-950/80 px-3 py-1 rounded-xl mt-1 border border-amber-400/50">?</span>
+                <button data-corner="TR" class="target-btn rounded-xl flex flex-col items-center justify-center p-1.5 group" data-val="5">
+                    <i class="fa-solid fa-bullseye text-sm sm:text-xl text-yellow-400 group-hover:scale-110 transition"></i>
+                    <span class="text-[9px] sm:text-xs font-bold text-amber-300 uppercase">Ángulo Der.</span>
+                    <span class="target-value text-xs sm:text-lg font-extrabold text-white font-game bg-slate-950/80 px-2.5 py-0.5 rounded-lg mt-0.5 border border-amber-400/50">5</span>
                 </button>
-                <button data-corner="BL" class="target-btn rounded-2xl flex flex-col items-center justify-center p-2 group">
-                    <i class="fa-solid fa-bullseye text-xl sm:text-2xl text-yellow-400 group-hover:scale-125 transition"></i>
-                    <span class="text-xs font-bold text-amber-300 mt-1 uppercase">Raso Izq.</span>
-                    <span class="target-value text-base sm:text-xl font-extrabold text-white font-game bg-slate-950/80 px-3 py-1 rounded-xl mt-1 border border-amber-400/50">?</span>
+                <button data-corner="BL" class="target-btn rounded-xl flex flex-col items-center justify-center p-1.5 group" data-val="3">
+                    <i class="fa-solid fa-bullseye text-sm sm:text-xl text-yellow-400 group-hover:scale-110 transition"></i>
+                    <span class="text-[9px] sm:text-xs font-bold text-amber-300 uppercase">Raso Izq.</span>
+                    <span class="target-value text-xs sm:text-lg font-extrabold text-white font-game bg-slate-950/80 px-2.5 py-0.5 rounded-lg mt-0.5 border border-amber-400/50">3</span>
                 </button>
-                <button data-corner="BR" class="target-btn rounded-2xl flex flex-col items-center justify-center p-2 group">
-                    <i class="fa-solid fa-bullseye text-xl sm:text-2xl text-yellow-400 group-hover:scale-125 transition"></i>
-                    <span class="text-xs font-bold text-amber-300 mt-1 uppercase">Raso Der.</span>
-                    <span class="target-value text-base sm:text-xl font-extrabold text-white font-game bg-slate-950/80 px-3 py-1 rounded-xl mt-1 border border-amber-400/50">?</span>
+                <button data-corner="BR" class="target-btn rounded-xl flex flex-col items-center justify-center p-1.5 group" data-val="6">
+                    <i class="fa-solid fa-bullseye text-sm sm:text-xl text-yellow-400 group-hover:scale-110 transition"></i>
+                    <span class="text-[9px] sm:text-xs font-bold text-amber-300 uppercase">Raso Der.</span>
+                    <span class="target-value text-xs sm:text-lg font-extrabold text-white font-game bg-slate-950/80 px-2.5 py-0.5 rounded-lg mt-0.5 border border-amber-400/50">6</span>
                 </button>
             </div>
 
             <!-- Commentary Banner Message Overlay -->
-            <div id="bannerMsg" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950/90 border-4 border-yellow-400 text-yellow-300 font-game text-2xl sm:text-4xl px-8 py-4 rounded-3xl shadow-2xl transform scale-75 opacity-0 transition-all duration-300 pointer-events-none text-center z-20">
+            <div id="bannerMsg" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950/90 border-2 sm:border-4 border-yellow-400 text-yellow-300 font-game text-xl sm:text-3xl px-6 py-3 rounded-2xl shadow-2xl transform scale-75 opacity-0 transition-all duration-300 pointer-events-none text-center z-20">
                 ¡GOOOOOOL!
             </div>
         </div>
     </main>
 
     <!-- Game Over Summary Modal -->
-    <div id="gameOverModal" class="fixed inset-0 bg-slate-950/90 custom-modal flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-slate-900 border-2 border-yellow-500/40 w-full max-w-md rounded-3xl p-6 text-center shadow-2xl">
-            <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-yellow-500/20 border-2 border-yellow-400 flex items-center justify-center text-4xl text-yellow-400">
+    <div id="gameOverModal" class="fixed inset-0 bg-slate-950/90 custom-modal flex items-center justify-center p-3 z-50 hidden">
+        <div class="bg-slate-900 border-2 border-yellow-500/40 w-full max-w-md rounded-3xl p-5 text-center shadow-2xl">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-yellow-500/20 border-2 border-yellow-400 flex items-center justify-center text-3xl text-yellow-400">
                 <i class="fa-solid fa-trophy" id="trophyIcon"></i>
             </div>
-            <h2 id="endTitle" class="text-3xl font-black font-game text-white mb-1">¡CAMPEONES!</h2>
-            <p id="endSubtitle" class="text-slate-400 text-sm mb-6">Ganaste la tanda de penales</p>
+            <h2 id="endTitle" class="text-2xl sm:text-3xl font-black font-game text-white mb-1">¡CAMPEONES!</h2>
+            <p id="endSubtitle" class="text-slate-400 text-xs sm:text-sm mb-4">Ganaste la tanda de penales</p>
 
-            <div class="bg-slate-800/80 rounded-2xl p-4 mb-6 border border-slate-700 flex justify-around items-center">
+            <div class="bg-slate-800/80 rounded-xl p-3 mb-4 border border-slate-700 flex justify-around items-center">
                 <div>
-                    <span class="block text-xs text-slate-400 font-bold">TU EQUIPO</span>
-                    <span id="finalUserScore" class="text-4xl font-black text-emerald-400 font-game">0</span>
+                    <span class="block text-[10px] sm:text-xs text-slate-400 font-bold">TU EQUIPO</span>
+                    <span id="finalUserScore" class="text-3xl font-black text-emerald-400 font-game">0</span>
                 </div>
-                <div class="text-2xl font-bold text-slate-500">-</div>
+                <div class="text-xl font-bold text-slate-500">-</div>
                 <div>
-                    <span class="block text-xs text-slate-400 font-bold">RIVAL CPU</span>
-                    <span id="finalCpuScore" class="text-4xl font-black text-rose-400 font-game">0</span>
+                    <span class="block text-[10px] sm:text-xs text-slate-400 font-bold">RIVAL CPU</span>
+                    <span id="finalCpuScore" class="text-3xl font-black text-rose-400 font-game">0</span>
                 </div>
             </div>
 
-            <div class="bg-slate-800/40 rounded-xl p-3 mb-6 text-left border border-slate-700/60">
+            <div class="bg-slate-800/40 rounded-xl p-2.5 mb-5 text-left border border-slate-700/60">
                 <div class="flex justify-between text-xs text-slate-300 mb-1">
                     <span>Efectividad Matemática:</span>
                     <span id="mathAccuracy" class="font-bold text-yellow-400">0%</span>
                 </div>
-                <div class="w-full bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
                     <div id="accuracyBar" class="bg-yellow-400 h-full transition-all duration-500" style="width: 0%"></div>
                 </div>
             </div>
 
-            <button id="playAgainBtn" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-slate-950 font-black rounded-xl text-lg transition duration-200 shadow-lg font-game">
+            <button id="playAgainBtn" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-slate-950 font-black rounded-xl text-base transition duration-200 shadow-lg font-game">
                 ¡JUGAR DE NUEVO!
             </button>
         </div>
     </div>
 
+    <!-- WebAudio Sound Engine -->
     <script>
         class AudioEngine {
             constructor() {
@@ -231,6 +395,9 @@
             init() {
                 if (!this.ctx) {
                     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
                 }
             }
 
@@ -321,12 +488,21 @@
 
         const soundBtn = document.getElementById('soundToggle');
         const soundIcon = document.getElementById('soundIcon');
-        soundBtn.addEventListener('click', () => {
+        const startSoundToggle = document.getElementById('startSoundToggle');
+        const startSoundIcon = document.getElementById('startSoundIcon');
+
+        function toggleSoundState() {
             sound.enabled = !sound.enabled;
-            soundIcon.className = sound.enabled ? 'fa-solid fa-volume-high text-lg' : 'fa-solid fa-volume-xmark text-lg text-rose-400';
-        });
+            const iconClass = sound.enabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark text-rose-400';
+            soundIcon.className = sound.enabled ? 'fa-solid fa-volume-high text-sm sm:text-base' : 'fa-solid fa-volume-xmark text-sm sm:text-base text-rose-400';
+            startSoundIcon.className = iconClass;
+        }
+
+        soundBtn.addEventListener('click', toggleSoundState);
+        startSoundToggle.addEventListener('click', toggleSoundState);
     </script>
 
+    <!-- Math Engine -->
     <script>
         const MathGenerator = {
             generate() {
@@ -342,9 +518,9 @@
             },
 
             linearEquation() {
-                const a = Math.floor(Math.random() * 5) + 2; // 2 to 6
-                const x = Math.floor(Math.random() * 10) + 2; // 2 to 11
-                const b = Math.floor(Math.random() * 15) + 3; // 3 to 17
+                const a = Math.floor(Math.random() * 5) + 2;
+                const x = Math.floor(Math.random() * 10) + 2;
+                const b = Math.floor(Math.random() * 15) + 3;
                 const rhs = a * x + b;
                 
                 const text = `${a}x + ${b} = ${rhs}  ⟶  ¿x = ?`;
@@ -422,11 +598,11 @@
         };
     </script>
 
+    <!-- Canvas Graphics Engine -->
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Target Corners mapping
         const CORNERS = {
             'TL': { x: 0.28, y: 0.28 },
             'TR': { x: 0.72, y: 0.28 },
@@ -434,7 +610,6 @@
             'BR': { x: 0.72, y: 0.65 }
         };
 
-        // Render Objects State
         let ball = {
             x: 0, y: 0, scale: 1,
             startX: 0, startY: 0,
@@ -460,9 +635,12 @@
         let netBulge = 0;
 
         function resizeCanvas() {
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width * (window.devicePixelRatio || 1);
-            canvas.height = rect.height * (window.devicePixelRatio || 1);
+            const container = canvas.parentElement;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            canvas.width = width * (window.devicePixelRatio || 1);
+            canvas.height = height * (window.devicePixelRatio || 1);
             resetPositions();
         }
 
@@ -472,7 +650,6 @@
             const w = canvas.width;
             const h = canvas.height;
 
-            // Ball at penalty spot
             ball.x = w * 0.5;
             ball.y = h * 0.76;
             ball.startX = ball.x;
@@ -481,7 +658,6 @@
             ball.inFlight = false;
             ball.progress = 0;
 
-            // Keeper in center of goal
             keeper.x = w * 0.5;
             keeper.y = h * 0.38;
             keeper.startX = keeper.x;
@@ -490,7 +666,6 @@
             keeper.progress = 0;
             keeper.rotation = 0;
 
-            // Kicker player behind ball
             playerCharacter.x = w * 0.29;
             playerCharacter.y = h * 0.81;
             playerCharacter.startX = playerCharacter.x;
@@ -525,7 +700,7 @@
 
             const horizon = h * 0.26;
 
-            // 1. Stadium Sky & Night Crowd Silhouette
+            // Stadium Sky
             const skyGrad = ctx.createLinearGradient(0, 0, 0, horizon);
             skyGrad.addColorStop(0, '#020617');
             skyGrad.addColorStop(0.7, '#0b1329');
@@ -533,7 +708,7 @@
             ctx.fillStyle = skyGrad;
             ctx.fillRect(0, 0, w, horizon);
 
-            // Crowd Audience Lights & Dots
+            // Audience Dots
             for (let i = 0; i < w; i += 8) {
                 const dotY = horizon - 15 + Math.sin(i * 0.3) * 5;
                 ctx.fillStyle = (i % 32 === 0 && Math.random() > 0.4) ? '#ffffff' : ((i % 16 === 0) ? '#f59e0b' : '#38bdf8');
@@ -542,12 +717,11 @@
                 ctx.fill();
             }
 
-            // Advertising Hoardings / Wall
+            // Wall
             const wallH = h * 0.08;
             ctx.fillStyle = '#334155';
             ctx.fillRect(0, horizon - wallH, w, wallH);
             
-            // Ad Board Stripes
             ctx.fillStyle = '#0284c7';
             ctx.fillRect(w * 0.05, horizon - wallH + 4, w * 0.25, wallH - 8);
             ctx.fillStyle = '#dc2626';
@@ -555,7 +729,7 @@
             ctx.fillStyle = '#eab308';
             ctx.fillRect(w * 0.7, horizon - wallH + 4, w * 0.25, wallH - 8);
 
-            // 2. Striped Grass Pitch
+            // Striped Pitch
             const grassTop = horizon;
             const grassHeight = h - grassTop;
             const numStripes = 9;
@@ -567,12 +741,11 @@
                 ctx.fillRect(0, y1, w, stripeH + 1);
             }
 
-            // Pitch Lines
+            // Lines
             ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = Math.max(3, w * 0.005);
             ctx.lineCap = 'square';
 
-            // Penalty Box Outer Line
             const boxY1 = h * 0.38;
             const boxY2 = h * 0.92;
             ctx.beginPath();
@@ -583,7 +756,6 @@
             ctx.lineTo(w * 0.12, boxY2);
             ctx.stroke();
 
-            // Goal Area Small Box
             const smallY1 = h * 0.32;
             ctx.beginPath();
             ctx.moveTo(w * 0.28, boxY1);
@@ -592,30 +764,19 @@
             ctx.lineTo(w * 0.72, boxY1);
             ctx.stroke();
 
-            // Penalty Arc
             ctx.beginPath();
             ctx.arc(w * 0.5, h * 0.76, w * 0.18, Math.PI * 0.15, Math.PI * 0.85);
             ctx.stroke();
 
-            // Penalty Spot
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.ellipse(w * 0.5, h * 0.76, w * 0.012, h * 0.006, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // 3. Goal Frame & Net Mesh
             drawGoal(w, h);
-
-            // 4. Goalkeeper Character
             drawGoalkeeper(w, h);
-
-            // 5. Shooter Player Character
             drawShooter(w, h);
-
-            // 6. Ball & Dynamic Shadow
             drawBall(w, h);
-
-            // 7. Confetti Particles
             updateAndDrawConfetti();
         }
 
@@ -625,7 +786,6 @@
             const goalY = h * 0.08;
             const goalH = h * 0.44;
 
-            // Net Mesh
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
             ctx.lineWidth = 1.2;
 
@@ -649,27 +809,15 @@
                 ctx.stroke();
             }
 
-            // Goal Posts & Crossbar
             ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = Math.max(6, w * 0.011);
+            ctx.lineWidth = Math.max(5, w * 0.011);
             ctx.lineCap = 'round';
-            ctx.lineJoin = 'miter';
 
             ctx.beginPath();
             ctx.moveTo(goalX, goalY + goalH);
             ctx.lineTo(goalX, goalY);
             ctx.lineTo(goalX + goalW, goalY);
             ctx.lineTo(goalX + goalW, goalY + goalH);
-            ctx.stroke();
-
-            // Post Depth Shadows
-            ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(goalX - 3, goalY);
-            ctx.lineTo(goalX - 3, goalY + goalH);
-            ctx.moveTo(goalX + goalW + 3, goalY);
-            ctx.lineTo(goalX + goalW + 3, goalY + goalH);
             ctx.stroke();
         }
 
@@ -680,38 +828,30 @@
 
             const scale = w * 0.0013;
 
-            // Shadow under Keeper
             ctx.fillStyle = 'rgba(0,0,0,0.25)';
             ctx.beginPath();
             ctx.ellipse(0, 35 * scale, 22 * scale, 7 * scale, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Legs / Socks
             ctx.fillStyle = '#ea580c';
             ctx.fillRect(-12 * scale, 10 * scale, 7 * scale, 22 * scale);
             ctx.fillRect(5 * scale, 10 * scale, 7 * scale, 22 * scale);
 
-            // Cleats / Shoes
             ctx.fillStyle = '#0f172a';
             ctx.fillRect(-14 * scale, 30 * scale, 10 * scale, 6 * scale);
             ctx.fillRect(4 * scale, 30 * scale, 10 * scale, 6 * scale);
 
-            // Shorts
             ctx.fillStyle = '#1e293b';
             ctx.fillRect(-15 * scale, -2 * scale, 30 * scale, 15 * scale);
 
-            // Torso / Jersey
             ctx.fillStyle = '#f97316';
             ctx.beginPath();
             ctx.roundRect(-16 * scale, -28 * scale, 32 * scale, 28 * scale, 5);
             ctx.fill();
 
-            // Jersey Detail Lines
             ctx.fillStyle = '#ea580c';
             ctx.fillRect(-16 * scale, -10 * scale, 32 * scale, 4 * scale);
 
-            // Arms & Gloves
-            ctx.fillStyle = '#f97316';
             if (keeper.isDiving) {
                 ctx.fillRect(-26 * scale, -24 * scale, 10 * scale, 7 * scale);
                 ctx.fillRect(16 * scale, -24 * scale, 10 * scale, 7 * scale);
@@ -730,13 +870,11 @@
                 ctx.fill();
             }
 
-            // Head & Skin Tone
             ctx.fillStyle = '#fed7aa';
             ctx.beginPath();
             ctx.arc(0, -36 * scale, 9 * scale, 0, Math.PI * 2);
             ctx.fill();
 
-            // Blonde Hair
             ctx.fillStyle = '#facc15';
             ctx.beginPath();
             ctx.arc(0, -39 * scale, 9.5 * scale, Math.PI, 0);
@@ -751,30 +889,24 @@
 
             const scale = w * 0.0016;
 
-            // Shadow under Player
             ctx.fillStyle = 'rgba(0,0,0,0.3)';
             ctx.beginPath();
             ctx.ellipse(0, 42 * scale, 24 * scale, 8 * scale, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Red Socks
             ctx.fillStyle = '#dc2626';
             let legOffset = playerCharacter.isRunning ? Math.sin(playerCharacter.runProgress * Math.PI * 6) * 12 * scale : 0;
 
-            // Left & Right Leg
             ctx.fillRect((-14 * scale), (14 * scale) + legOffset, 8 * scale, 26 * scale);
             ctx.fillRect((4 * scale), (14 * scale) - legOffset, 8 * scale, 26 * scale);
 
-            // Cleats
             ctx.fillStyle = '#0f172a';
             ctx.fillRect((-16 * scale), (38 * scale) + legOffset, 11 * scale, 6 * scale);
             ctx.fillRect((4 * scale), (38 * scale) - legOffset, 11 * scale, 6 * scale);
 
-            // White Shorts
             ctx.fillStyle = '#f8fafc';
             ctx.fillRect(-16 * scale, -2 * scale, 32 * scale, 18 * scale);
 
-            // Red & Black Vertical Striped Jersey
             ctx.fillStyle = '#dc2626';
             ctx.beginPath();
             ctx.roundRect(-18 * scale, -34 * scale, 36 * scale, 34 * scale, 6);
@@ -785,17 +917,14 @@
             ctx.fillRect(0 * scale, -34 * scale, 6 * scale, 34 * scale);
             ctx.fillRect(12 * scale, -34 * scale, 4 * scale, 34 * scale);
 
-            // Arms
             ctx.fillStyle = '#fed7aa';
             ctx.fillRect(-24 * scale, -28 * scale, 7 * scale, 20 * scale);
             ctx.fillRect(17 * scale, -28 * scale, 7 * scale, 20 * scale);
 
-            // Head & Skin
             ctx.beginPath();
             ctx.arc(0, -44 * scale, 10 * scale, 0, Math.PI * 2);
             ctx.fill();
 
-            // Blonde Hair
             ctx.fillStyle = '#facc15';
             ctx.beginPath();
             ctx.arc(0, -47 * scale, 10.5 * scale, Math.PI * 0.85, Math.PI * 0.15);
@@ -871,6 +1000,7 @@
         }
     </script>
 
+    <!-- Main Game Logic -->
     <script>
         let gameState = {
             round: 1,
@@ -895,6 +1025,8 @@
         const equationRoleTag = document.getElementById('equationRoleTag');
         const targetOverlay = document.getElementById('targetOverlay');
         const bannerMsg = document.getElementById('bannerMsg');
+        const startModal = document.getElementById('startModal');
+        const startGameBtn = document.getElementById('startGameBtn');
 
         function initGame() {
             gameState.round = 1;
@@ -920,7 +1052,7 @@
 
             for (let i = 0; i < gameState.maxRounds; i++) {
                 const pDot = document.createElement('div');
-                pDot.className = 'w-3.5 h-3.5 rounded-full border border-slate-600 flex items-center justify-center text-[9px] font-bold ';
+                pDot.className = 'w-3 h-3 rounded-full border border-slate-600 flex items-center justify-center text-[8px] font-bold ';
                 if (gameState.playerHistory[i] === 'GOAL') {
                     pDot.className += 'bg-emerald-500 text-slate-950 border-emerald-400';
                     pDot.innerHTML = '✓';
@@ -933,7 +1065,7 @@
                 playerDots.appendChild(pDot);
 
                 const cDot = document.createElement('div');
-                cDot.className = 'w-3.5 h-3.5 rounded-full border border-slate-600 flex items-center justify-center text-[9px] font-bold ';
+                cDot.className = 'w-3 h-3 rounded-full border border-slate-600 flex items-center justify-center text-[8px] font-bold ';
                 if (gameState.cpuHistory[i] === 'GOAL') {
                     cDot.className += 'bg-emerald-500 text-slate-950 border-emerald-400';
                     cDot.innerHTML = '✓';
@@ -970,14 +1102,14 @@
 
             if (gameState.turn === 'PLAYER') {
                 turnIndicator.textContent = `RONDA ${gameState.round} • TU TURNO DE PATEAR`;
-                turnIndicator.className = "text-xs md:text-sm font-bold text-yellow-400 font-game uppercase tracking-wider";
-                equationRoleTag.textContent = "⚽ ¡Elige la respuesta correcta en el arco para patear y hacer el gol!";
-                equationRoleTag.className = "text-xs font-bold uppercase tracking-widest text-emerald-400 block mb-0.5";
+                turnIndicator.className = "text-[10px] sm:text-xs font-bold text-yellow-400 font-game uppercase tracking-wider";
+                equationRoleTag.textContent = "⚽ ¡Elige la respuesta correcta para patear y hacer el gol!";
+                equationRoleTag.className = "text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-400 block leading-tight";
             } else {
                 turnIndicator.textContent = `RONDA ${gameState.round} • RIVAL PATEA (VOS ATAJÁS)`;
-                turnIndicator.className = "text-xs md:text-sm font-bold text-rose-400 font-game uppercase tracking-wider";
+                turnIndicator.className = "text-[10px] sm:text-xs font-bold text-rose-400 font-game uppercase tracking-wider";
                 equationRoleTag.textContent = "🧤 ¡Elige la respuesta correcta para tirarte con el arquero y atajar!";
-                equationRoleTag.className = "text-xs font-bold uppercase tracking-widest text-amber-400 block mb-0.5";
+                equationRoleTag.className = "text-[10px] sm:text-xs font-bold uppercase tracking-widest text-amber-400 block leading-tight";
             }
 
             targetOverlay.classList.remove('hidden', 'opacity-0');
@@ -1078,7 +1210,7 @@
                         setTimeout(() => {
                             gameState.turn = 'CPU';
                             nextTurn();
-                        }, 2200);
+                        }, 2000);
                     });
                 }
             }
@@ -1143,7 +1275,7 @@
                             gameState.round++;
                             gameState.turn = 'PLAYER';
                             nextTurn();
-                        }, 2200);
+                        }, 2000);
                     });
                 }
             }
@@ -1152,7 +1284,7 @@
         }
 
         function animateShot(onComplete) {
-            const duration = 40;
+            const duration = 38;
             let frame = 0;
 
             function step() {
@@ -1180,11 +1312,11 @@
 
         function showBanner(text, styleClass) {
             bannerMsg.textContent = text;
-            bannerMsg.className = `absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950/95 border-4 font-game text-2xl sm:text-4xl px-8 py-4 rounded-3xl shadow-2xl transform scale-100 opacity-100 transition-all duration-300 pointer-events-none text-center z-20 ${styleClass}`;
+            bannerMsg.className = `absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950/95 border-2 sm:border-4 font-game text-xl sm:text-3xl px-6 py-3 rounded-2xl shadow-2xl transform scale-100 opacity-100 transition-all duration-300 pointer-events-none text-center z-20 ${styleClass}`;
 
             setTimeout(() => {
                 bannerMsg.className = bannerMsg.className.replace('scale-100 opacity-100', 'scale-75 opacity-0');
-            }, 1800);
+            }, 1600);
         }
 
         function endGame() {
@@ -1209,18 +1341,18 @@
 
             if (gameState.playerScore > gameState.cpuScore) {
                 endTitle.textContent = "¡CAMPEONES!";
-                endTitle.className = "text-3xl font-black font-game text-emerald-400 mb-1";
+                endTitle.className = "text-2xl sm:text-3xl font-black font-game text-emerald-400 mb-1";
                 endSubtitle.textContent = "¡Ganaste la tanda de penales con genialidad matemática!";
                 trophyIcon.className = "fa-solid fa-trophy text-yellow-400";
                 sound.playGoal();
             } else if (gameState.playerScore < gameState.cpuScore) {
                 endTitle.textContent = "DERROTA EN PENALES";
-                endTitle.className = "text-3xl font-black font-game text-rose-400 mb-1";
+                endTitle.className = "text-2xl sm:text-3xl font-black font-game text-rose-400 mb-1";
                 endSubtitle.textContent = "El rival ganó la tanda. ¡Practicá tus ejercicios y revancha!";
                 trophyIcon.className = "fa-solid fa-heart-crack text-rose-400";
             } else {
                 endTitle.textContent = "¡EMPATE TÉCNICO!";
-                endTitle.className = "text-3xl font-black font-game text-yellow-400 mb-1";
+                endTitle.className = "text-2xl sm:text-3xl font-black font-game text-yellow-400 mb-1";
                 endSubtitle.textContent = "¡Gran esfuerzo de ambos equipos en los 5 penales!";
                 trophyIcon.className = "fa-solid fa-handshake text-yellow-400";
             }
@@ -1233,6 +1365,13 @@
             requestAnimationFrame(mainLoop);
         }
 
+        startGameBtn.addEventListener('click', () => {
+            sound.init();
+            sound.playWhistle();
+            startModal.classList.add('hidden');
+            initGame();
+        });
+
         document.getElementById('restartBtn').addEventListener('click', () => {
             document.getElementById('gameOverModal').classList.add('hidden');
             initGame();
@@ -1244,7 +1383,6 @@
         });
 
         resizeCanvas();
-        initGame();
         requestAnimationFrame(mainLoop);
     </script>
 </body>
